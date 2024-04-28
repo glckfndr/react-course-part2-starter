@@ -2,8 +2,9 @@ import { useState } from "react";
 import usePosts from "../hooks/usePosts";
 
 const PostList = () => {
-  const [userId, setUserId] = useState<number>();
-  const { data: posts, error, isLoading } = usePosts(userId);
+  const pageSize: number = 10;
+  const [page, setPage] = useState<number>(1);
+  const { data: posts, error, isLoading } = usePosts({ page, pageSize });
 
   if (isLoading)
     return <div className="spinner-border text-success" role="status"></div>;
@@ -11,21 +12,6 @@ const PostList = () => {
 
   return (
     <>
-      <select
-        className="form-select mb-3"
-        onChange={(ev) => {
-          console.log(ev.target.value);
-          setUserId(parseInt(ev.target.value));
-        }}
-        value={userId}
-      >
-        <option selected value={undefined}>
-          Posts of All Users
-        </option>
-        <option value="1">User1</option>
-        <option value="2">User2</option>
-        <option value="3">User3</option>
-      </select>
       <ul className="list-group">
         {posts?.map((post) => (
           <li key={post.id} className="list-group-item">
@@ -33,6 +19,18 @@ const PostList = () => {
           </li>
         ))}
       </ul>
+      <button
+        className="btn btn-primary my-2"
+        onClick={() => setPage((prev) => (prev > 1 ? prev - 1 : 1))}
+      >
+        Previous
+      </button>
+      <button
+        className="btn btn-primary ms-1"
+        onClick={() => setPage((prev) => prev + 1)}
+      >
+        Next
+      </button>
     </>
   );
 };
