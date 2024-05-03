@@ -3,8 +3,13 @@ import usePosts from "../hooks/usePosts";
 
 const PostList = () => {
   const pageSize: number = 10;
-  const [page, setPage] = useState<number>(1);
-  const { data: posts, error, isLoading } = usePosts({ page, pageSize });
+  const {
+    data: posts,
+    error,
+    isLoading,
+    fetchNextPage,
+    isFetching,
+  } = usePosts({ pageSize });
 
   if (isLoading)
     return <div className="spinner-border text-success" role="status"></div>;
@@ -13,23 +18,23 @@ const PostList = () => {
   return (
     <>
       <ul className="list-group">
-        {posts?.map((post) => (
-          <li key={post.id} className="list-group-item">
-            {post.title}
-          </li>
+        {posts.pages?.map((page) => (
+          <>
+            {page.map((post) => (
+              <li key={post.id} className="list-group-item">
+                {post.title}
+              </li>
+            ))}
+          </>
         ))}
       </ul>
+
       <button
-        className="btn btn-primary my-2"
-        onClick={() => setPage((prev) => (prev > 1 ? prev - 1 : 1))}
+        disabled={isFetching}
+        className="btn btn-primary my-3 ms-1"
+        onClick={() => fetchNextPage()}
       >
-        Previous
-      </button>
-      <button
-        className="btn btn-primary ms-1"
-        onClick={() => setPage((prev) => prev + 1)}
-      >
-        Next
+        {isFetching ? "Loading ..." : "Load More"}
       </button>
     </>
   );
